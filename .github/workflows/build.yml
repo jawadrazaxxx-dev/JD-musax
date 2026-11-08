@@ -35,6 +35,14 @@ jobs:
       - name: Use updated index.html
         run: cp index.html project/jdmusax-android/web/index.html
 
+      - name: Build Android project
+        run: |
+          cd project/jdmusax-android
+          npm install
+          npm run build:web
+          npx cap add android
+          npx cap sync android
+
       - name: Use smaller Gradle download
         run: |
           cd project/jdmusax-android
@@ -42,19 +50,20 @@ jobs:
           from pathlib import Path
 
           p = Path("android/gradle/wrapper/gradle-wrapper.properties")
+          if not p.exists():
+              raise SystemExit("Gradle wrapper properties file not found")
+
           s = p.read_text()
-          s = s.replace("gradle-8.14.3-all.zip", "gradle-8.14.3-bin.zip")
+          s = s.replace("-all.zip", "-bin.zip")
           p.write_text(s)
+
+          print("Gradle distribution updated successfully")
           PY
 
-      - name: Build Android APK
+      - name: Compile APK
         run: |
-          cd project/jdmusax-android
-          npm install
-          npm run build:web
-          npx cap add android
-          npx cap sync android
-          cd android
+          cd project/jdmusax-android/android
+          chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK
