@@ -1,0 +1,48 @@
+
+name: Build JD musax APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Extract project
+        run: |
+          unzip -q JD-musax-Android-project.zip -d project
+
+      - name: Build Android APK
+        run: |
+          cd project/jdmusax-android
+          npm install
+          npm run build:web
+          npx cap add android
+          npx cap sync android
+          cd android
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: JD-musax-APK
+          path: project/jdmusax-android/android/app/build/outputs/apk/debug/app-debug.apk
