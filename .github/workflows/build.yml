@@ -4,7 +4,8 @@ name: Build JD musax APK
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -28,12 +29,10 @@ jobs:
           java-version: '21'
 
       - name: Extract project
-        run: |
-          unzip -q JD-musax-Android-project.zip -d project
+        run: unzip -q JD-musax-Android-project.zip -d project
 
-                - name: Use updated index.html
-      
-          cp index.html project/jdmusax-android/web/index.html
+      - name: Use updated index.html
+        run: cp index.html project/jdmusax-android/web/index.html
 
       - name: Build Android APK
         run: |
