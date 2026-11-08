@@ -13,6 +13,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,6 +34,18 @@ jobs:
 
       - name: Use updated index.html
         run: cp index.html project/jdmusax-android/web/index.html
+
+      - name: Use smaller Gradle download
+        run: |
+          cd project/jdmusax-android
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path("android/gradle/wrapper/gradle-wrapper.properties")
+          s = p.read_text()
+          s = s.replace("gradle-8.14.3-all.zip", "gradle-8.14.3-bin.zip")
+          p.write_text(s)
+          PY
 
       - name: Build Android APK
         run: |
