@@ -32,7 +32,7 @@ jobs:
           unzip -q JD-musax-Android-project.zip -d project
 
                 - name: Use updated index.html
-        run: |
+      
           cp index.html project/jdmusax-android/web/index.html
 
       - name: Build Android APK
